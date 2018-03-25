@@ -19,12 +19,14 @@ This repo includes (1) the training procedure of our models;  (2) evaluation scr
 
 
 ### Contents
-0. [Requirements](#part-0-requirements)
-1. [Prepare dataset](#part-1-prepare-dataset)
-2. [Depth](#part-2-depth)
-3. [Depth and odometry](#part-3-depth-and-odometry)
-3. [Depth, odometry and feature](#part-4-depth-odometry-and-feature)
-4. [Result evaluation](#part-5-result-evaluation)
+1. [Requirements](#part-1-requirements)
+2. [Prepare dataset](#part-2-prepare-dataset)
+3. [Depth](#part-3-depth)
+4. [Depth and odometry](#part-4-depth-and-odometry)
+5. [Feature Reconstruction Loss for Depth](#part-5-feature-reconstruction-loss-for-depth)
+6. [Depth, odometry and feature](#part-6-depth-odometry-and-feature)
+7. [Result evaluation](#part-7-result-evaluation)
+
 
 ### Part 1. Requirements
 
