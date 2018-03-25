@@ -3,7 +3,7 @@
 This repo implements the system described in the CVPR-2018 paper:
 
 [**Unsupervised Learning of Monocular Depth Estimation and Visual Odometry with Deep Feature Reconstruction** 
-]() 
+](https://arxiv.org/abs/1803.03893) 
 
 Huangying Zhan, Ravi Garg, Chamara Saroj Weerasekera, Kejie Li, Harsh Agarwal, Ian Reid
 
