@@ -1,0 +1,326 @@
+# Visual odometry net
+
+# ----------------------------------------------------------------------
+# Data input
+# ----------------------------------------------------------------------
+input: "imgs"
+input_dim: 1
+input_dim: 6 #first 3-channel: I2; last 3-channel: I1
+input_dim: 160
+input_dim: 608
+
+# ----------------------------------------------------------------------
+# Pose Network
+# ----------------------------------------------------------------------
+
+layer {
+  name: "conv_0_pose"
+  type: "Convolution"
+  bottom: "imgs"
+  top: "conv_0_pose"
+  param { 
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param { 
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param { 
+    num_output: 16
+    kernel_size: 7
+    stride: 2
+    pad: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_0_pose"
+  type: "ReLU"
+  bottom: "conv_0_pose"
+  top: "conv_0_pose"
+}
+
+
+layer {
+  name: "conv_1_pose"
+  type: "Convolution"
+  bottom: "conv_0_pose"
+  top: "conv_1_pose"
+  param { 
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param { 
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param { 
+    num_output: 32
+    kernel_size: 5
+    stride: 2
+    pad: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_1_pose"
+  type: "ReLU"
+  bottom: "conv_1_pose"
+  top: "conv_1_pose"
+}
+
+
+layer {
+  name: "conv_2_pose"
+  type: "Convolution"
+  bottom: "conv_1_pose"
+  top: "conv_2_pose"
+  param { 
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param { 
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param { 
+    num_output: 64
+    kernel_size: 3
+    stride: 2
+    pad: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_2_pose"
+  type: "ReLU"
+  bottom: "conv_2_pose"
+  top: "conv_2_pose"
+}
+
+layer {
+  name: "conv_3_pose"
+  type: "Convolution"
+  bottom: "conv_2_pose"
+  top: "conv_3_pose"
+  param { 
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param { 
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param { 
+    num_output: 128
+    kernel_size: 3
+    stride: 2
+    pad: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_3_pose"
+  type: "ReLU"
+  bottom: "conv_3_pose"
+  top: "conv_3_pose"
+}
+
+layer {
+  name: "conv_4_pose"
+  type: "Convolution"
+  bottom: "conv_3_pose"
+  top: "conv_4_pose"
+  param { 
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param { 
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param { 
+    num_output: 256
+    kernel_size: 3
+    stride: 2
+    pad: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_4_pose"
+  type: "ReLU"
+  bottom: "conv_4_pose"
+  top: "conv_4_pose"
+}
+
+layer {
+  name: "conv_5_pose"
+  type: "Convolution"
+  bottom: "conv_4_pose"
+  top: "conv_5_pose"
+  param { 
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param { 
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param { 
+    num_output: 256
+    kernel_size: 3
+    stride: 2
+    pad: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_5_pose"
+  type: "ReLU"
+  bottom: "conv_5_pose"
+  top: "conv_5_pose"
+}
+
+layer {
+  name: "fc_0_pose"
+  type: "InnerProduct"
+  bottom: "conv_5_pose"
+  top: "fc_0_pose"
+  param { lr_mult: 1 decay_mult: 1 }
+  param { lr_mult: 2 decay_mult: 0 }
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_fc_0_pose"
+  type: "ReLU"
+  bottom: "fc_0_pose"
+  top: "fc_0_pose"
+}
+
+layer {
+  name: "fc_1_pose"
+  type: "InnerProduct"
+  bottom: "fc_0_pose"
+  top: "fc_1_pose"
+  param { lr_mult: 1 decay_mult: 1 }
+  param { lr_mult: 2 decay_mult: 0 }
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "relu_fc_1_pose"
+  type: "ReLU"
+  bottom: "fc_1_pose"
+  top: "fc_1_pose"
+}
+
+
+layer {
+  name: "temporal_pose_0"
+  type: "InnerProduct"
+  bottom: "fc_1_pose"
+  top: "temporal_pose_0"
+  param { lr_mult: 0.1 decay_mult: 1 }
+  param { lr_mult: 0.2 decay_mult: 0 }
+  inner_product_param {
+    num_output: 6
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+
+layer {
+  name: "temporal_pose"
+  type: "Reshape"
+  bottom: "temporal_pose_0"
+  top: "T_2to1" # transformation from t2 to t1 
+  reshape_param {
+    shape {
+      dim: 0  # copy the dimension from below
+      dim: 0
+      dim: 1
+      dim: 1 # infer it from the other dimensions
+    }
+  }
+}
+
+# ----------------------------------------------------------------------
+# Geometry
+# ----------------------------------------------------------------------
+
+layer {
+  name: "SE3"
+  type: "Python"
+  bottom: "T_2to1" 
+  top: "SE3"
+  python_param { 
+    module: "pygeometry"
+    layer: "SE3_Generator_KITTI"
+  }
+}

@@ -1,0 +1,22 @@
+train_net: "experiments/depth_feature/train.prototxt"
+display: 20
+average_loss: 20
+lr_policy: "step"
+gamma: 0.1        # drop the learning rate by a factor of 10
+                  # (i.e., multiply it by a factor of gamma = 0.1)
+
+stepsize: 80000  # drop the learning rate every 120K iterations
+base_lr: 1e-3
+# high momentum
+momentum: 0.9
+momentum2:0.999
+delta:1e-8
+# no gradient accumulation
+iter_size: 1
+max_iter: 200000
+weight_decay: 0.0001
+snapshot: 10000
+snapshot_prefix: "snapshots/depth_feature/train"
+test_initialization: false
+type: "Adam"
+solver_mode: GPU
