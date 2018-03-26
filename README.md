@@ -100,7 +100,7 @@ In order to run the evaluation, a `npy` file is required to store the predicted 
 1. Update `caffe_root` in `./tools/evaluation_tools.py`
 2. To generate the depth prediction and save it in a `npy` file. 
 ```
- python ./tools/evaluation_tools.py --func generate_depth_npy --dataset kitti_eigen --depth_net_def ./experiments/networks/depth_deploy.prototxt --model models/trained_models/Baseline.caffemodel --npy_dir ./result/depth/inv_depths_baseline.npy
+ python ./tools/evaluation_tools.py --func generate_depth_npy --dataset kitti_eigen --depth_net_def ./experiments/networks/depth_deploy.prototxt --model models/trained_models/eigen_split/Baseline.caffemodel --npy_dir ./result/depth/inv_depths_baseline.npy
 ```
 
 3. To evalute the predictions.
@@ -118,13 +118,13 @@ Some of our results (inverse depths) are released and can be downloaded from [he
 2. To generate the odometry predictions (relative camera motions), run the following script.
 
 ```
-python ./tools/evaluation_tools.py --func generate_odom_result --model models/trained_models/Temporal.caffemodel --odom_net_def ./experiments/networks/odometry_deploy.prototxt --odom_result_dir ./result/odom_result
+python ./tools/evaluation_tools.py --func generate_odom_result --model models/trained_models/odometry_split/Temporal.caffemodel --odom_net_def ./experiments/networks/odometry_deploy.prototxt --odom_result_dir ./result/odom_result
 ```
 
 3. After getting the odometry predictions, we can evalute the performance by comparing with the ground truth poses.
 
 ```
-python ./tools/evaluation_tools.py --func eval_odom --odom_result_dir ./result/odometry
+python ./tools/evaluation_tools.py --func eval_odom --odom_result_dir ./result/odom_result
 ```
 
 ### License
