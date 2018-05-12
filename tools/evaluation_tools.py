@@ -52,6 +52,7 @@ class kittiEigenGenerateDepthNpy():
 			# Get and preprocess image
 			# ----------------------------------------------------------------------
 			img = cv2.imread(img_path)
+			assert img!=None, "Image reading error. Check whether your image path is correct or not."
 			img = cv2.resize(img, (self.image_width, self.image_height))
 			img = img.transpose((2,0,1))
 			img = img.astype(np.float32)
@@ -121,6 +122,7 @@ class kittiPredOdom():
 		# Get and preprocess image
 		# ----------------------------------------------------------------------
 		img = cv2.imread(img_path)
+		assert img!=None, "Image reading error. Check whether your image path is correct or not."
 		# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 		img = cv2.resize(img, (self.image_width, self.image_height))
 		img = img.transpose((2,0,1))
