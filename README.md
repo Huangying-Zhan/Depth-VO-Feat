@@ -127,6 +127,9 @@ python ./tools/evaluation_tools.py --func generate_odom_result --model models/tr
 python ./tools/evaluation_tools.py --func eval_odom --odom_result_dir ./result/odom_result
 ```
 
+
+Our odometry results are released and can be downloaded from [here](https://www.dropbox.com/sh/qsb54kdpsp4i3wd/AAAht6__ssw3LlN168DsEqxca?dl=0).
+
 ### License
 For academic usage, the code is released under the permissive BSD license. For any commercial purpose, please contact the authors.
 
