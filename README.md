@@ -8,11 +8,12 @@ This repo implements the system described in the CVPR-2018 paper:
 Huangying Zhan, Ravi Garg, Chamara Saroj Weerasekera, Kejie Li, Harsh Agarwal, Ian Reid
 
 ```
-@article{zhan2018unsupervised,
-  title={Unsupervised Learning of Monocular Depth Estimation and Visual Odometry with Deep Feature Reconstruction},
-  author={Zhan, Huangying and Garg, Ravi and Weerasekera, Chamara Saroj and Li, Kejie and Agarwal, Harsh and Reid, Ian},
-  journal={arXiv preprint arXiv:1803.03893},
-  year={2018}
+@InProceedings{Zhan_2018_CVPR,
+author = {Zhan, Huangying and Garg, Ravi and Saroj Weerasekera, Chamara and Li, Kejie and Agarwal, Harsh and Reid, Ian},
+title = {Unsupervised Learning of Monocular Depth Estimation and Visual Odometry With Deep Feature Reconstruction},
+booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2018}
 }
 ```
 This repo includes (1) the training procedure of our models;  (2) evaluation scripts for the results; (3) trained models and results.
