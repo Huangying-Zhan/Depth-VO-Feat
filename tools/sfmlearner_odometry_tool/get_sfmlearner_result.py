@@ -95,4 +95,4 @@ for seq in ['09', '10']:
         for cnt in poses:
             poses_pred[cnt][:3, 3] *= scale
 
-    save_traj("./sfm/{}.txt".format(seq), poses_pred)
+    save_traj("./{}.txt".format(seq), poses_pred)

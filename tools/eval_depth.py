@@ -2,7 +2,7 @@
 # https://github.com/mrharicot/monodepth/blob/master/utils/evaluate_kitti.py
 
 import numpy as np
-import cv, cv2
+import cv2
 import argparse
 from eval_depth_utils import *
 
