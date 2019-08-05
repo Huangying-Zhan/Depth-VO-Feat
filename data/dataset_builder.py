@@ -2,7 +2,7 @@ import os, os.path
 import random
 import scipy.io as sio
 import numpy as np
-import lmdb
+# import lmdb
 from shutil import copyfile
 import cv2
 import json
@@ -10,10 +10,10 @@ import argparse
 
 import sys
 from os.path import expanduser
-home = expanduser("~")
-caffe_root = home + '/caffe/'  # this file should be run from {caffe_root}/examples (otherwise change this line)
-sys.path.insert(0, caffe_root + 'python')
-import caffe
+# home = expanduser("~")
+# caffe_root = home + '/caffe/'  # this file should be run from {caffe_root}/examples (otherwise change this line)
+# sys.path.insert(0, caffe_root + 'python')
+# import caffe
 
 class kittiEigenBuilder():
     def __init__(self):
@@ -52,9 +52,6 @@ class kittiEigenBuilder():
                          'city/2011_09_28_drive_0001',
                          'city/2011_09_26_drive_0113']
 
-
-
-
     def setup(self,setup_opt):    
         self.train_frame_distance = setup_opt['train_frame_distance']
         self.raw_data_dir = setup_opt['raw_data_dir']
@@ -63,7 +60,6 @@ class kittiEigenBuilder():
 
         if not os.path.exists(self.dataset_dir):
             os.makedirs(self.dataset_dir)
-
 
     def getData(self,isTrain):
         # ----------------------------------------------------------------------
@@ -156,8 +152,6 @@ class kittiEigenBuilder():
 
         return [fx,fy,cx,cy,se3]
 
-
-
     def shuffleDataset(self):
         list_ = list(zip(self.L1_set, self.L2_set, self.R1_set, self.R2_set, self.K, self.T))
         random.shuffle(list_)
@@ -210,13 +204,11 @@ class kittiEigenBuilder():
 
             print "Dataset built! Number of validation instances: ", len(self.L1_set[start_idx:])
 
-
     def saveTxt(self, path, img_list):
         f = open(path, 'w')
         for line in img_list:
             f.writelines(line+"\n")
         f.close()
-
 
     def saveLmdb(self, path, np_arr):
         # input: np_arr: shape = (N,C,H,W)
@@ -237,13 +229,253 @@ class kittiEigenBuilder():
                 txn.put(str_id.encode('ascii'), datum.SerializeToString())
 
 
+class kittiOdomBuilder():
+    def __init__(self):
+        self.train_scenes = ["residential/2011_10_03_drive_0027", 
+                        "road/2011_10_03_drive_0042",
+                        "residential/2011_10_03_drive_0034",
+                        # "residential/2011_09_26_drive_0067",
+                        "road/2011_09_30_drive_0016",
+                        "residential/2011_09_30_drive_0018",
+                        "residential/2011_09_30_drive_0020",
+                        "residential/2011_09_30_drive_0027",
+                        "residential/2011_09_30_drive_0028"
+                        # test sets
+                        # ,"residential/2011_09_30_drive_0033", 
+                        # "residential/2011_09_30_drive_0034"
+                        ]
+        self.train_seqs = [[0,4540],
+                          [0,1100],
+                          [0,4660],
+                          # [0,800],
+                          [0,270],
+                          [0,2760],
+                          [0,1100],
+                          [0,1100],
+                          [1100,5170]
+
+                          # test sets
+                          # ,[0,1590],
+                          # [0,1200]
+                         ]
+
+        self.test_scenes = ["residential/2011_09_30_drive_0033", 
+                            "residential/2011_09_30_drive_0034"]
+
+        self.test_seqs = [[0,1590],[0,1200]]
+
+        # self.test_scenes = self.train_scenes
+        # self.test_seqs = self.train_seqs
+
+    def setup(self, setupOpt):
+        self.train_frame_distance = setupOpt['train_frame_distance']
+        self.test_frame_distance = setupOpt['test_frame_distance']
+        self.dataset_dir = setupOpt['raw_data_dir']
+        self.resource_dir = setupOpt['dataset_dir']
+        self.image_size = setup_opt['image_size']
+
+    def getTrainData(self):
+        # ----------------------------------------------------------------------
+        # Get Training dataset: image pairs (L1,L2,R1,R2 & K &T(L2R))
+        # ----------------------------------------------------------------------
+        self.train_L1 = []
+        self.train_R1 = []
+        self.train_L2 = []
+        self.train_R2 = []
+        self.K = []
+        self.T = []
+
+        for cnt, train_scene in enumerate(self.train_scenes):
+            seq_start = self.train_seqs[cnt][0]
+            seq_end = self.train_seqs[cnt][1]
+            for i in xrange(seq_start,seq_end-self.train_frame_distance+1):
+                L1 = "/".join([self.dataset_dir, train_scene, "image_02", "data", '{:010}'.format(i)]) + ".png"
+                L2 = "/".join([self.dataset_dir, train_scene, "image_02", "data", '{:010}'.format(i+self.train_frame_distance)]) + ".png"
+                R1 = "/".join([self.dataset_dir, train_scene, "image_03", "data", '{:010}'.format(i)]) + ".png"
+                R2 = "/".join([self.dataset_dir, train_scene, "image_03", "data", '{:010}'.format(i+self.train_frame_distance)]) + ".png"
+
+                self.train_L1.append(L1)
+                self.train_L2.append(L2)
+                self.train_R1.append(R1)
+                self.train_R2.append(R2)
+
+                # kt_file_path = "/".join([self.dataset_dir, train_scene, "KT.txt"])
+                kt_scene =  "/".join([self.dataset_dir, train_scene])
+                KT = self.getKT(kt_scene)
+                self.K.append(KT[:4])
+                self.T.append(KT[4])
+
+    def getTestData(self):
+        # ----------------------------------------------------------------------
+        # Get Training dataset: image pairs (L1,L2,R1,R2 & K &T(L2R))
+        # ----------------------------------------------------------------------
+        self.test_L1 = []
+        self.test_R1 = []
+        self.test_L2 = []
+        self.test_R2 = []
+        self.test_K = []
+        self.test_T = []
+
+        for cnt, test_scene in enumerate(self.test_scenes):
+            seq_start = self.test_seqs[cnt][0]
+            seq_end = self.test_seqs[cnt][1]
+            for i in xrange(seq_start,seq_end-self.test_frame_distance+1):
+                L1 = "/".join([self.dataset_dir, test_scene, "image_02", "data", '{:010}'.format(i)]) + ".png"
+                L2 = "/".join([self.dataset_dir, test_scene, "image_02", "data", '{:010}'.format(i+self.test_frame_distance)]) + ".png"
+                R1 = "/".join([self.dataset_dir, test_scene, "image_03", "data", '{:010}'.format(i)]) + ".png"
+                R2 = "/".join([self.dataset_dir, test_scene, "image_03", "data", '{:010}'.format(i+self.test_frame_distance)]) + ".png"
+
+                self.test_L1.append(L1)
+                self.test_L2.append(L2)
+                self.test_R1.append(R1)
+                self.test_R2.append(R2)
+
+                kt_file_path = "/".join([self.dataset_dir, test_scene, "KT.txt"])
+                KT = self.getKT(kt_file_path)
+                self.test_K.append(KT[:4])
+                self.test_T.append(KT[4])
+
+    def getKT(self,scene):
+        # ----------------------------------------------------------------------
+        # Get K (camera intrinsic) and T (camera extrinsic)
+        # ----------------------------------------------------------------------
+        new_image_size = [float(self.image_size[0]), float(self.image_size[1])] #[height,width]
+
+        # ----------------------------------------------------------------------
+        # Get original K
+        # ----------------------------------------------------------------------
+        f = open(scene+"/calib/calib_cam_to_cam.txt", 'r')
+        camTxt = f.readlines()
+        f.close()
+        K_dict = {}
+        for line in camTxt:
+            line_split = line.split(":")
+            K_dict[line_split[0]] = line_split[1]
+
+        # ----------------------------------------------------------------------
+        # original K02
+        # ----------------------------------------------------------------------
+        P_split = K_dict["P_rect_02"].split(" ")
+        S_split = K_dict["S_rect_02"].split(" ")
+        ref_img_size = [float(S_split[2]), float(S_split[1])] # height, width
+
+
+        # ----------------------------------------------------------------------
+        # Get new K & position
+        # ----------------------------------------------------------------------
+        W_ratio = new_image_size[1] / ref_img_size[1]
+        H_ratio = new_image_size[0] / ref_img_size[0]
+        fx = float(P_split[1]) * W_ratio
+        fy = float(P_split[6]) * H_ratio
+        cx = float(P_split[3]) * W_ratio
+        cy = float(P_split[7]) * H_ratio
+
+        tx_L = float(P_split[4]) / float(P_split[1])
+        # ty_L = float(P_split[8]) / float(P_split[6])
+
+        # ----------------------------------------------------------------------
+        # original K03
+        # ----------------------------------------------------------------------
+        P_split = K_dict["P_rect_03"].split(" ")
+        S_split = K_dict["S_rect_03"].split(" ")
+
+        tx_R = float(P_split[4]) / float(P_split[1])
+        # ty_R = float(P_split[8]) / float(P_split[6])
+
+        # ----------------------------------------------------------------------
+        # Get position of Right camera w.r.t Left
+        # ----------------------------------------------------------------------
+        Tx = np.abs(tx_R - tx_L)
+        # Ty = np.abs(tx_R - tx_L)
+
+        se3 = [0,0,0,Tx,0,0]
+
+        return [fx,fy,cx,cy,se3]
+
+
+    def shuffleDataset(self):
+        # Shuffled the following three lists
+        # 1. self.Isrc_list: source image paths
+        # 2. self.Itgt_list: target image paths
+        # 3. self.camMotionGT: transformation matrix from target frame to source frame
+        list_ = list(zip(self.train_L1, self.train_L2, self.train_R1, self.train_R2, self.K, self.T))
+        random.shuffle(list_)
+        self.train_L1, self.train_L2, self.train_R1, self.train_R2, self.K, self.T = zip(*list_)
+
+    def saveTrainset(self):
+        # ----------------------------------------------------------------------
+        # 
+        # ----------------------------------------------------------------------
+        txt_to_save = "/".join([self.resource_dir,"left_1.txt"])
+        self.saveTxt(txt_to_save, self.train_L1)
+
+        txt_to_save = "/".join([self.resource_dir,"right_1.txt"])
+        self.saveTxt(txt_to_save, self.train_R1)
+
+        txt_to_save = "/".join([self.resource_dir,"left_2.txt"])
+        self.saveTxt(txt_to_save, self.train_L2)
+
+        txt_to_save = "/".join([self.resource_dir,"right_2.txt"])
+        self.saveTxt(txt_to_save, self.train_R2)
+
+        lmdb_to_save = "/".join([self.resource_dir,"K"])
+        # self.saveLmdb(lmdb_to_save, np.expand_dims(np.expand_dims(np.asarray(self.K),3),4))
+
+        lmdb_to_save = "/".join([self.resource_dir,"T_R2L"])
+        # self.saveLmdb(lmdb_to_save, np.expand_dims(np.expand_dims(np.asarray(self.T),3),4))
+
+    def saveTestset(self):
+        txt_to_save = "/".join([self.resource_dir,"left_1.txt"])
+        self.saveTxt(txt_to_save, self.test_L1)
+
+        txt_to_save = "/".join([self.resource_dir,"right_1.txt"])
+        self.saveTxt(txt_to_save, self.test_R1)
+
+        txt_to_save = "/".join([self.resource_dir,"left_2.txt"])
+        self.saveTxt(txt_to_save, self.test_L2)
+
+        txt_to_save = "/".join([self.resource_dir,"right_2.txt"])
+        self.saveTxt(txt_to_save, self.test_R2)
+
+        lmdb_to_save = "/".join([self.resource_dir,"K"])
+        self.saveLmdb(lmdb_to_save, np.expand_dims(np.expand_dims(np.asarray(self.test_K),3),4))
+
+        lmdb_to_save = "/".join([self.resource_dir,"T_R2L"])
+        self.saveLmdb(lmdb_to_save, np.expand_dims(np.expand_dims(np.asarray(self.test_T),3),4))
+
+    def saveTxt(self, path, img_list):
+        f = open(path, 'w')
+        for line in img_list:
+            f.writelines(line+"\n")
+        f.close()
+
+    def saveLmdb(self, path, np_arr):
+        # input: np_arr: shape = (N,C,H,W)
+        N = np_arr.shape[0]
+        map_size = np_arr.nbytes * 10
+        env = lmdb.open(path, map_size=map_size)
+        print np_arr.shape
+
+        with env.begin(write=True) as txn:
+            # txn is a Transaction object
+            for i in range(N):
+                datum = caffe.proto.caffe_pb2.Datum()
+                datum.channels = np_arr.shape[1]
+                datum.height = np_arr.shape[2]
+                datum.width = np_arr.shape[3]
+                datum = caffe.io.array_to_datum(np_arr[i])
+                str_id = '{:08}'.format(i)
+                # The encode is only essential in Python 3
+                txn.put(str_id.encode('ascii'), datum.SerializeToString())
+
+
 
 parser = argparse.ArgumentParser(description='Dataset builder')
 parser.add_argument('--builder', type=str, default='kitti_eigen', help='Select builder (kitti_eigen; kitti_dometry)')
 parser.add_argument('--train_frame_distance', type=int, default=1, help='Frame distance between training instances')
 parser.add_argument('--raw_data_dir', type=str, default='./data/kitti_raw_data', help='Directory path storing the raw KITTI dataset')
 parser.add_argument('--dataset_dir', type=str, default='./data/dataset/kitti_eigen', help='Directory path storing the created dataset')
-parser.add_argument('--image_size', type=list, default=[160, 608], help='Image size for the dataset [height, width]')
+parser.add_argument('--image_size', type=list, default="[160, 608]", help='Image size for the dataset [height, width]')
 parser.add_argument('--with_val', type=bool, default=False, help='Building validation set as well')
 
 args = parser.parse_args()
@@ -274,4 +506,15 @@ if args.builder == "kitti_eigen":
     if args.with_val:
         builder.saveDataset(isTrain=False)  
 
-
+elif args.builder == "kitti_odom":
+    builder = kittiOdomBuilder()
+    setup_opt = {}
+    setup_opt['train_frame_distance'] = args.train_frame_distance
+    setup_opt['test_frame_distance'] = 1
+    setup_opt['raw_data_dir'] = args.raw_data_dir
+    setup_opt['dataset_dir'] = args.dataset_dir
+    setup_opt['image_size'] = args.image_size
+    builder.setup(setup_opt)
+    builder.getTrainData()
+    builder.shuffleDataset()
+    builder.saveTrainset()
