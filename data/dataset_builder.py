@@ -2,7 +2,7 @@ import os, os.path
 import random
 import scipy.io as sio
 import numpy as np
-# import lmdb
+import lmdb
 from shutil import copyfile
 import cv2
 import json
@@ -10,10 +10,10 @@ import argparse
 
 import sys
 from os.path import expanduser
-# home = expanduser("~")
-# caffe_root = home + '/caffe/'  # this file should be run from {caffe_root}/examples (otherwise change this line)
-# sys.path.insert(0, caffe_root + 'python')
-# import caffe
+home = expanduser("~")
+caffe_root = home + '/caffe/'  # this file should be run from {caffe_root}/examples (otherwise change this line)
+sys.path.insert(0, caffe_root + 'python')
+import caffe
 
 class kittiEigenBuilder():
     def __init__(self):
