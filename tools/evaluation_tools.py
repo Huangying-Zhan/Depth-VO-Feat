@@ -457,7 +457,7 @@ class kittiEvalOdom():
 		dist = self.trajectoryDistances(poses_gt)
 		self.step_size = 10
 		
-		for first_frame in xrange(9, len(poses_gt), self.step_size):
+		for first_frame in xrange(0, len(poses_gt), self.step_size):
 			for i in xrange(self.num_lengths):
 				len_ = self.lengths[i]
 				last_frame = self.lastFrameFromSegmentLength(dist, first_frame, len_)
