@@ -2,7 +2,19 @@
 
 The main dataset used in this project is [KITTI Driving Dataset](http://www.cvlibs.net/datasets/kitti/raw_data.php). The videos in three categories (City, Residential, Road) are used in our experiments.
 
-<!-- FIXME: provide a script to download the dataset and arrange in required structure -->
+Use the KITTI raw download script (thanks to Omid Hosseini for sharing) to download KITTI raw:
+
+```
+cd ./data/kitti_raw_data
+./raw_data_downloader.sh
+```
+
+Execute the symbolic link script to arrange the downloaded data in required structure:
+
+```
+./create_symbolic_links.sh
+```
+
 
 ## Dataset structure
 
