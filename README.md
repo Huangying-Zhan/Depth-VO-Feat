@@ -134,7 +134,3 @@ Our odometry results are released and can be downloaded from [here](https://www.
 ### License
 For academic usage, the code is released under the permissive BSD license. For any commercial purpose, please contact the authors.
 
-### To-do list
-
-- Dataset generator for KITTI Odometry split
-- Details related to other features for feature reconstruction loss
